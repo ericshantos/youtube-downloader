@@ -18,17 +18,17 @@ Um script CLI em Python para download de vídeos do YouTube em alta qualidade, c
 
 ## 📦 Como usar
 
-1. Clone ou baixe este repositório.
+**1.** Clone ou baixe este repositório.
 
-2. Instale as dependências com pip: pip install pytubefix python-slugify
+**2.** Instale as dependências com pip: pip install pytubefix python-slugify
 
-3. Certifique-se de que o FFmpeg está instalado e acessível no terminal (adicione ao PATH, se necessário).
+**3.** Certifique-se de que o FFmpeg está instalado e acessível no terminal (adicione ao PATH, se necessário).
 
-Para instalar o FFmpeg no Windows: https://ffmpeg.org/download.html
+ - Para instalar o FFmpeg no Windows: https://ffmpeg.org/download.html
 
-No Linux (Debian/Ubuntu): sudo apt install ffmpeg
+-  No Linux (Debian/Ubuntu): sudo apt install ffmpeg
 
-4.Execute o script via terminal: python downloader.py
+**4.** Execute o script via terminal: python downloader.py
 
 ## 📸 Exemplo de uso
 **para baixar somente áudio:**
