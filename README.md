@@ -33,14 +33,14 @@ Um script CLI em Python para download de vídeos do YouTube em alta qualidade, c
 ## 📸 Exemplo de uso
 **para baixar somente áudio:**
 
-Digite a URL do vídeo: https://youtube.com/xyz123
+Digite a URL do vídeo: https://youtube.com/exemplo
 Deseja baixar só o áudio? (s/n): s
 ...
 ✅ Áudio salvo em: C:\Users\seunome\Music\nome-do-video_audio.mp4
 
 **Ou para baixar o vídeo com áudio:**
 
-Digite a URL do vídeo: https://youtube.com/xyz123
+Digite a URL do vídeo: https://youtube.com/exemplo
 Deseja baixar só o áudio? (s/n): n
 Escolha a resolução:
 1 - 1080p
