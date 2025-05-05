@@ -31,7 +31,7 @@ No Linux (Debian/Ubuntu): sudo apt install ffmpeg
 4.Execute o script via terminal: python downloader.py
 
 ## 📸 Exemplo de uso
-**para baixar somente áudio:
+**para baixar somente áudio:**
 
 Digite a URL do vídeo: https://youtube.com/xyz123
 Deseja baixar só o áudio? (s/n): s
