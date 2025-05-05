@@ -4,7 +4,7 @@ Um script CLI em Python para download de vídeos do YouTube em alta qualidade, c
 
 ## 🧰 Tecnologias utilizadas
 - [pytubefix](https://github.com/rohit-px/pytubefix) — para captura de streams de vídeo e áudio do YouTube
-- [python-slugify](https://github.com/un33k/python-slugify) — para gerar nomes de arquivos seguros
+- [python-slugify](https://github.com/un33k/python-slugify) — para gerar nomes de arquivos seguros (sem espaços ou caracteres inválidos)  
 - [FFmpeg](https://ffmpeg.org/) — para mesclar vídeo e áudio
 - Python 3.8+
 
@@ -18,12 +18,32 @@ Um script CLI em Python para download de vídeos do YouTube em alta qualidade, c
 
 ## 📦 Como usar
 
-1. Instale os requisitos:
+1. Clone ou baixe este repositório.
 
-pip install pytubefix python-slugify
+2. Instale as dependências com pip: pip install pytubefix python-slugify
 
-2. Certifique-se de que o ffmpeg esteja instalado e acessível via terminal.
+3. Certifique-se de que o FFmpeg está instalado e acessível no terminal (adicione ao PATH, se necessário).
 
-3. execulte o script:
+Para instalar o FFmpeg no Windows: https://ffmpeg.org/download.html
 
-python downloader.py
+No Linux (Debian/Ubuntu): sudo apt install ffmpeg
+
+4.Execute o script via terminal: python downloader.py
+
+## 📸 Exemplo de uso
+**para baixar somente áudio:
+
+Digite a URL do vídeo: https://youtube.com/xyz123
+Deseja baixar só o áudio? (s/n): s
+...
+✅ Áudio salvo em: C:\Users\seunome\Music\nome-do-video_audio.mp4
+
+**Ou para baixar o vídeo com áudio:**
+
+Digite a URL do vídeo: https://youtube.com/xyz123
+Deseja baixar só o áudio? (s/n): n
+Escolha a resolução:
+1 - 1080p
+2 - 720p
+...
+✅ Vídeo final salvo em: C:\Users\seunome\Videos\nome-do-video_1080p.mp4
