@@ -7,13 +7,34 @@ import subprocess
 import sys
 
 url = input("Digite a URL do vídeo: ")
+somente_audio = input("Deseja baixar só o áudio? (s/n): ").strip().lower() == "s"
 
-destino = Path.home() / "Videos"
+destino = Path.home() / ("Music" if somente_audio else "Videos")
 
 yt = YouTube(url, on_progress_callback=on_progress)
 
 print(f"\nTítulo do vídeo: {yt.title}")
 print(f"Salvando em: {destino}")
+
+safe_title = slugify(yt.title)
+
+if somente_audio:
+    audio_stream = yt.streams.filter(
+        only_audio=True, file_extension='mp4').order_by('abr').desc().first()
+    if not audio_stream:
+        print("❌ Stream de áudio não encontrado.")
+        sys.exit(1)
+
+    audio_path = destino / f"{safe_title}_audio.mp4"
+    print("Baixando áudio...")
+    audio_stream.download(output_path=destino, filename=audio_path.name)
+
+    if not audio_path.exists() or audio_path.stat().st_size == 0:
+        print("❌ Áudio não foi baixado corretamente.")
+        sys.exit(1)
+
+    print(f"\n✅ Áudio salvo em: {audio_path}")
+    sys.exit(0)
 
 video_streams = yt.streams.filter(
     adaptive=True, only_video=True, file_extension='mp4'
@@ -48,7 +69,6 @@ if not audio_stream:
     print("❌ Stream de áudio não encontrado.")
     sys.exit(1)
 
-safe_title = slugify(yt.title)
 video_path = destino / f"{yt.video_id}_video.mp4"
 audio_path = destino / f"{yt.video_id}_audio.mp4"
 output_path = destino / f"{safe_title}_{resolucao_escolhida}.mp4"
