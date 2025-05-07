@@ -1,6 +1,6 @@
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
-from slugify import slugify  # pip install python-slugify
+from slugify import slugify
 import os
 from pathlib import Path
 import subprocess
@@ -9,19 +9,18 @@ import sys
 def main():
     limpa_tela()
 
-    url = valida_url_yt()
-    somente_audio = input("Deseja baixar só o áudio? (s/n): ").strip().lower() == "s"
+    url_yt: str = valida_url_yt()
+    o_que_baixar: str = opcoes_audio_video()
 
-    destino = Path.home() / ("Music" if somente_audio else "Videos")
-
-    yt = YouTube(url, on_progress_callback=on_progress)
+    destino = Path.home() / ("Music" if o_que_baixar == "audio" else "Videos")
+    yt: YouTube = YouTube(url_yt, on_progress_callback=on_progress)
 
     print(f"\nTítulo do vídeo: {yt.title}")
     print(f"Salvando em: {destino}")
 
     safe_title = slugify(yt.title)
 
-    if somente_audio:
+    if o_que_baixar == "audio":
         audio_stream = yt.streams.filter(
             only_audio=True, file_extension='mp4').order_by('abr').desc().first()
         if not audio_stream:
@@ -107,11 +106,22 @@ def main():
     os.remove(video_path)
     os.remove(audio_path)
 
+def opcoes_audio_video():
+    """ mostra as opções de download e retorna a opção escolhida """
+    print("\nEscolha uma das opções de download :")
+    print("\t1. somente áudio")
+    print("\t2. vídeo com aúdio")
+    opcao: str = input("\n >> ")
+
+    if opcao not in ("1", "2"):
+        erro_sair("Opção incorreta")
+
+    return "audio" if opcao == "1" else "audio_video"
+
 def erro_sair(msg: str):
     """ mostra a mensagem de erro e sair do prgrama """
     print(f"\n❌ {msg}.\n")
     sys.exit(1)
-
 
 def valida_url_yt() -> str:
     """ valida a url para receber um link do YouTube válido """
