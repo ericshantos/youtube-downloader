@@ -8,6 +8,7 @@ import sys
 
 def main():
     limpa_tela()
+
     url = valida_url_yt()
     somente_audio = input("Deseja baixar só o áudio? (s/n): ").strip().lower() == "s"
 
@@ -24,16 +25,14 @@ def main():
         audio_stream = yt.streams.filter(
             only_audio=True, file_extension='mp4').order_by('abr').desc().first()
         if not audio_stream:
-            print("❌ Stream de áudio não encontrado.")
-            sys.exit(1)
+            erro_sair("Stream de áudio não encontrado")
 
         audio_path = destino / f"{safe_title}_audio.mp4"
         print("Baixando áudio...")
         audio_stream.download(output_path=destino, filename=audio_path.name)
 
         if not audio_path.exists() or audio_path.stat().st_size == 0:
-            print("❌ Áudio não foi baixado corretamente.")
-            sys.exit(1)
+            erro_sair("Áudio não foi baixado corretamente")
 
         print(f"\n✅ Áudio salvo em: {audio_path}")
         sys.exit(0)
@@ -65,11 +64,9 @@ def main():
     ).order_by('abr').desc().first()
 
     if not video_stream:
-        print("❌ Stream de vídeo não encontrado.")
-        sys.exit(1)
+        erro_sair("Stream de vídeo não encontrado")
     if not audio_stream:
-        print("❌ Stream de áudio não encontrado.")
-        sys.exit(1)
+        erro_sair("Stream de áudio não encontrado")
 
     video_path = destino / f"{yt.video_id}_video.mp4"
     audio_path = destino / f"{yt.video_id}_audio.mp4"
@@ -82,11 +79,9 @@ def main():
     audio_stream.download(output_path=destino, filename=audio_path.name)
 
     if not video_path.exists() or video_path.stat().st_size == 0:
-        print("❌ Vídeo não foi baixado corretamente.")
-        sys.exit(1)
+        erro_sair("Vídeo não foi baixado corretamente")
     if not audio_path.exists() or audio_path.stat().st_size == 0:
-        print("❌ Áudio não foi baixado corretamente.")
-        sys.exit(1)
+        erro_sair("Áudio não foi baixado corretamente")
 
     print("\nMesclando vídeo e áudio com FFmpeg...")
     ffmpeg_cmd = [
@@ -104,14 +99,22 @@ def main():
         subprocess.run(ffmpeg_cmd, check=True)
         print(f"\n✅ Vídeo final salvo em: {output_path}")
     except subprocess.CalledProcessError:
-        print("\n❌ Erro ao mesclar vídeo e áudio com FFmpeg.")
-        sys.exit(1)
+        erro_sair("Erro ao mesclar vídeo e áudio com FFmpeg")
+    # erro quando FFmpeg não está instalado
+    except FileNotFoundError:
+        erro_sair("Verifique se está com FFmpeg instalado")
 
     os.remove(video_path)
     os.remove(audio_path)
 
+def erro_sair(msg: str):
+    """ mostra a mensagem de erro e sair do prgrama """
+    print(f"\n❌ {msg}.\n")
+    sys.exit(1)
+
+
 def valida_url_yt() -> str:
-    """ valida a url para receber um link válido """
+    """ valida a url para receber um link do YouTube válido """
 
     # link válido
     # https://www.youtube.com/watch?v=exemplo
@@ -124,8 +127,7 @@ def valida_url_yt() -> str:
     if link_modelo in url or link_curto in url:
         return url
 
-    print("❌ Link inválido.")
-    sys.exit(1)
+    erro_sair("Link inválido")
 
 def limpa_tela():
     os.system('cls' if os.name=='nt' else 'clear')
