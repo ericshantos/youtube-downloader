@@ -15,8 +15,9 @@ def main():
     destino = Path.home() / ("Music" if o_que_baixar == "audio" else "Videos")
     yt: YouTube = YouTube(url_yt, on_progress_callback=on_progress)
 
-    print(f"\nTítulo do vídeo: {yt.title}")
-    print(f"Salvando em: {destino}")
+    limpa_tela()
+    print(f"\nTítulo do vídeo a ser baixado :\n\n\t {yt.title}")
+    print(f"\nSalvando em: {destino}\n")
 
     safe_title = slugify(yt.title)
 
@@ -107,37 +108,30 @@ def main():
     os.remove(audio_path)
 
 def opcoes_audio_video():
-    """ mostra as opções de download e retorna a opção escolhida """
+    """ mostra as opções de download e retorna a escolhida """
     print("\nEscolha uma das opções de download :")
     print("\t1. somente áudio")
     print("\t2. vídeo com aúdio")
+    print("\t0. encerrar")
     opcao: str = input("\n >> ")
 
-    if opcao not in ("1", "2"):
-        erro_sair("Opção incorreta")
+    while opcao not in ("0", "1", "2"):
+        print("\nOpção inválida. Digite novamente.")
+        opcao = input(" >> ")
+
+    if opcao == "0":
+        encerrar()
 
     return "audio" if opcao == "1" else "audio_video"
 
-def erro_sair(msg: str):
-    """ mostra a mensagem de erro e sair do prgrama """
-    print(f"\n❌ {msg}.\n")
-    sys.exit(1)
-
-def encerrar():
-    """ função para encerrar o programa de forma amigável """
-    limpa_tela()
-    print("\n\tEncerrando o programa.\n")
-    sys.exit()
-
 def recebe_valida_url() -> str:
     """ recebe e valida a url para receber um link do YouTube válido """
-
     # link válido : https://www.youtube.com/watch?v=exemplo
     link_modelo: str = "https://www.youtube.com/watch?v="
     # link encurtado válido : https://youtu.be/exemplo
     link_curto: str = "https://youtu.be"
 
-    print("Digite a url conforme um dos modelos abaixo (0 para sair) : ")
+    print("Digite a url conforme um dos modelos abaixo (0 para encerrar) : ")
     print(f"\t - {link_modelo}exemplo")
     print("\t ou")
     print(f"\t - {link_curto}/exemplo")
@@ -158,8 +152,20 @@ def recebe_valida_url() -> str:
     # https://www.youtube.com/watch?v=exemplo&list=WL&index=1&t=251s
     return url.split("&")[0]
 
+# funções do sistema
 def limpa_tela():
     os.system('cls' if os.name=='nt' else 'clear')
+
+def erro_sair(msg: str):
+    """ mostra a mensagem de erro e sair do prgrama """
+    print(f"\n❌ {msg}.\n")
+    sys.exit(1)
+
+def encerrar():
+    """ função para encerrar o programa de forma amigável """
+    limpa_tela()
+    print("\n\tEncerrando o programa.\n")
+    sys.exit()
 
 if __name__ == "__main__":
     main()
