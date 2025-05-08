@@ -9,7 +9,7 @@ from slugify import slugify
 def main():
     limpa_tela()
 
-    url_yt: str = valida_url_yt()
+    url_yt: str = recebe_valida_url()
     o_que_baixar: str = opcoes_audio_video()
 
     destino = Path.home() / ("Music" if o_que_baixar == "audio" else "Videos")
@@ -123,21 +123,40 @@ def erro_sair(msg: str):
     print(f"\n❌ {msg}.\n")
     sys.exit(1)
 
-def valida_url_yt() -> str:
-    """ valida a url para receber um link do YouTube válido """
+def encerrar():
+    """ função para encerrar o programa de forma amigável """
+    limpa_tela()
+    print("\n\tEncerrando o programa.\n")
+    sys.exit()
 
-    # link válido
-    # https://www.youtube.com/watch?v=exemplo
+def recebe_valida_url() -> str:
+    """ recebe e valida a url para receber um link do YouTube válido """
+
+    # link válido : https://www.youtube.com/watch?v=exemplo
     link_modelo: str = "https://www.youtube.com/watch?v="
     # link encurtado válido : https://youtu.be/exemplo
     link_curto: str = "https://youtu.be"
 
-    url = input("Digite a URL do vídeo: ")
+    print("Digite a url conforme um dos modelos abaixo (0 para sair) : ")
+    print(f"\t - {link_modelo}exemplo")
+    print("\t ou")
+    print(f"\t - {link_curto}/exemplo")
+    url = input("\n >> ")
 
-    if link_modelo in url or link_curto in url:
-        return url
+    while link_modelo not in url and link_curto not in url and url != "0":
+        print("\nLink inválido. Digite novamente.")
+        url = input(" >> ")
 
-    erro_sair("Link inválido")
+    if url == "0":
+        encerrar()
+
+    # remove o conteúdo do link após o identificador do vídeo
+    # https://youtu.be/exemplo?t=123, https://youtu.be/exemplo?si=codigo, etc
+    if link_curto in url:
+        return url.split("?")[0]
+
+    # https://www.youtube.com/watch?v=exemplo&list=WL&index=1&t=251s
+    return url.split("&")[0]
 
 def limpa_tela():
     os.system('cls' if os.name=='nt' else 'clear')
