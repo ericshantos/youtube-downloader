@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
+from pytubefix.exceptions import BotDetection
 from slugify import slugify
 
 def main():
@@ -16,7 +17,13 @@ def main():
     yt: YouTube = YouTube(url_yt, on_progress_callback=on_progress)
 
     limpa_tela()
-    print(f"\nTítulo do vídeo a ser baixado :\n\n\t {yt.title}")
+    try:
+        print(f"\nTítulo do vídeo a ser baixado :\n\n\t {yt.title}")
+    except BotDetection:
+        msg: str = "Aparentemente você foi bloqueado por excesso de downloads."
+        msg += "\n\nAcesse o link abaixo para mais informações :\n\n\t"
+        msg += "https://github.com/JuanBindez/pytubefix/pull/209"
+        erro_sair(msg)
 
     titulo_slug:str = slugify(yt.title)
 
