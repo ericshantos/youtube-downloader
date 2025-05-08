@@ -1,10 +1,10 @@
+import os
+import subprocess
+import sys
+from pathlib import Path
 from pytubefix import YouTube
 from pytubefix.cli import on_progress
 from slugify import slugify
-import os
-from pathlib import Path
-import subprocess
-import sys
 
 def main():
     limpa_tela()
