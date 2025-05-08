@@ -10,80 +10,70 @@ def main():
     limpa_tela()
 
     url_yt: str = recebe_valida_url()
-    o_que_baixar: str = opcoes_audio_video()
+    o_que_baixar: str = menu_audio_video()
 
     destino = Path.home() / ("Music" if o_que_baixar == "audio" else "Videos")
     yt: YouTube = YouTube(url_yt, on_progress_callback=on_progress)
 
     limpa_tela()
     print(f"\nTítulo do vídeo a ser baixado :\n\n\t {yt.title}")
-    print(f"\nSalvando em: {destino}\n")
+    # print(f"\nSalvando em: {destino}\n")
 
-    safe_title = slugify(yt.title)
+    titulo_slug:str = slugify(yt.title)
 
     if o_que_baixar == "audio":
-        audio_stream = yt.streams.filter(
-            only_audio=True, file_extension='mp4').order_by('abr').desc().first()
-        if not audio_stream:
-            erro_sair("Stream de áudio não encontrado")
+        audio_path = baixa_audio(yt, destino, titulo_slug)
+        print(f"\nÁudio salvo em {audio_path}.")
+    else:
+        video_path, resolucao = baixa_video(yt, destino, titulo_slug)
+        audio_path = baixa_audio(yt, destino, titulo_slug)
 
-        audio_path = destino / f"{safe_title}_audio.mp4"
-        print("Baixando áudio...")
-        audio_stream.download(output_path=destino, filename=audio_path.name)
+        output_path = destino / f"{titulo_slug}_{resolucao}.mp4"
+        junta_audio_video(audio_path, video_path, output_path)
 
-        if not audio_path.exists() or audio_path.stat().st_size == 0:
-            erro_sair("Áudio não foi baixado corretamente")
+# funções de download
+def baixa_audio(yt: YouTube, destino: Path, titulo: str):
+    """ função para baixar apenas o áudio """
+    audio_stream = yt.streams.filter(
+        only_audio=True, file_extension='mp4').order_by('abr').desc().first()
+    if not audio_stream:
+        erro_sair("Stream de áudio não encontrado")
 
-        print(f"\n✅ Áudio salvo em: {audio_path}")
-        sys.exit(0)
+    audio_path = destino / f"{titulo}_audio.mp4"
+    print("\nBaixando áudio...")
+    audio_stream.download(output_path=destino, filename=audio_path.name)
 
+    if not audio_path.exists() or audio_path.stat().st_size == 0:
+        erro_sair("Áudio não foi baixado corretamente")
+
+    return audio_path
+
+def baixa_video(yt: YouTube, destino: Path, titulo: str):
+    """ função para baixar apenas o vídeo """
     video_streams = yt.streams.filter(
         adaptive=True, only_video=True, file_extension='mp4'
     ).order_by('resolution').desc()
 
-    resolucoes = []
-    print("\nEscolha a resolução de vídeo desejada:")
-    for stream in video_streams:
-        resolucao = stream.resolution
-        if resolucao and resolucao not in resolucoes:
-            resolucoes.append(resolucao)
-            print(f"{len(resolucoes)} - {resolucao}")
-
-    try:
-        opcao = int(input("\nDigite o número da resolução desejada: ")) - 1
-        resolucao_escolhida = resolucoes[opcao]
-    except (IndexError, ValueError):
-        print("❌ Opção inválida.")
-        sys.exit(1)
+    resolucao_escolhida: str = menu_resolucoes(video_streams)
 
     video_stream = yt.streams.filter(
-        res=resolucao_escolhida, only_video=True, file_extension='mp4'
-    ).first()
-    audio_stream = yt.streams.filter(
-        only_audio=True, file_extension='mp4'
-    ).order_by('abr').desc().first()
+        res=resolucao_escolhida, only_video=True, file_extension='mp4').first()
 
     if not video_stream:
         erro_sair("Stream de vídeo não encontrado")
-    if not audio_stream:
-        erro_sair("Stream de áudio não encontrado")
 
-    video_path = destino / f"{yt.video_id}_video.mp4"
-    audio_path = destino / f"{yt.video_id}_audio.mp4"
-    output_path = destino / f"{safe_title}_{resolucao_escolhida}.mp4"
+    video_path = destino / f"{titulo}_video.mp4"
 
     print(f"\nBaixando vídeo em {resolucao_escolhida}...")
     video_stream.download(output_path=destino, filename=video_path.name)
 
-    print("Baixando áudio...")
-    audio_stream.download(output_path=destino, filename=audio_path.name)
-
     if not video_path.exists() or video_path.stat().st_size == 0:
         erro_sair("Vídeo não foi baixado corretamente")
-    if not audio_path.exists() or audio_path.stat().st_size == 0:
-        erro_sair("Áudio não foi baixado corretamente")
 
-    print("\nMesclando vídeo e áudio com FFmpeg...")
+    return video_path, resolucao_escolhida
+
+def junta_audio_video(video_path, audio_path, output_path):
+    print("\n\nMesclando vídeo e áudio com FFmpeg...")
     ffmpeg_cmd = [
         "ffmpeg",
         "-y",
@@ -97,7 +87,8 @@ def main():
 
     try:
         subprocess.run(ffmpeg_cmd, check=True)
-        print(f"\n✅ Vídeo final salvo em: {output_path}")
+        limpa_tela()
+        print(f"\n✅ Vídeo final salvo em :\n\n\t{output_path}")
     except subprocess.CalledProcessError:
         erro_sair("Erro ao mesclar vídeo e áudio com FFmpeg")
     # erro quando FFmpeg não está instalado
@@ -107,7 +98,33 @@ def main():
     os.remove(video_path)
     os.remove(audio_path)
 
-def opcoes_audio_video():
+# funções de menu
+def menu_resolucoes(streams) -> str:
+    """ menu das resoluções disponíveis do vídeo """
+    print("\nEscolha uma resolução da lista abaixo : ")
+    resolucoes: list[str] = []
+    for stream in streams:
+        resolucao = stream.resolution
+        if resolucao and resolucao not in resolucoes:
+            resolucoes.append(resolucao)
+            print(f"\t{len(resolucoes)}. {resolucao}")
+    print("\t0. encerrar")
+    opcao = input(" >> ")
+
+    while True:
+        try:
+            opcao = int(opcao)
+            if opcao == 0:
+                encerrar()
+            elif 0 < opcao <= len(resolucoes):
+                return resolucoes[opcao - 1]
+        except ValueError:
+            pass
+
+        print("\nOpção inválida. Digite novamente.")
+        opcao = input(" >> ")
+
+def menu_audio_video():
     """ mostra as opções de download e retorna a escolhida """
     print("\nEscolha uma das opções de download :")
     print("\t1. somente áudio")
