@@ -31,28 +31,76 @@ Um script CLI em Python para download de vídeos do YouTube em alta qualidade, c
 
 ## 📸 Exemplo de uso
 
-### baixar somente áudio
+### 1. baixar somente áudio
+```
+Digite a url conforme um dos modelos abaixo (0 para encerrar) :
+  - https://www.youtube.com/watch?v=exemplo
+  ou
+  - https://youtu.be/exemplo
 
-Digite a URL do vídeo: https://youtube.com/exemplo
+  >> https://www.youtube.com/watch?v=exemplo
 
-Deseja baixar só o áudio? (s/n): s
+Escolha uma das opções de download :
+  1. somente áudio
+  2. somente vídeo
+  3. vídeo com áudio
+  0. encerrar
+
+  >> 1
+...
+
+✅ Áudio salvo em: C:\Users\usuario\Music\nome-do-video-audio.mp3
+```
+
+### 2. baixar somente vídeo
+```
+Digite a url conforme um dos modelos abaixo (0 para encerrar) :
+  - https://www.youtube.com/watch?v=exemplo
+  ou
+  - https://youtu.be/exemplo
+
+  >> https://www.youtube.com/watch?v=exemplo
+
+Escolha uma das opções de download :
+  1. somente áudio
+  2. somente vídeo
+  3. vídeo com áudio
+  0. encerrar
+
+  >> 2
+...
+
+✅ Áudio salvo em: C:\Users\usuario\Videos\nome-do-video-video.mp4
+```
+
+### 3. baixar vídeo com áudio
+```
+Digite a url conforme um dos modelos abaixo (0 para encerrar) :
+  - https://www.youtube.com/watch?v=exemplo
+  ou
+  - https://youtu.be/exemplo
+
+  >> https://www.youtube.com/watch?v=exemplo
+
+Escolha uma das opções de download :
+  1. somente áudio
+  2. somente vídeo
+  3. vídeo com áudio
+  0. encerrar
+
+  >> 3
+
+Escolha uma resolução da lista abaixo :
+  1. 1080p
+  2. 720p
+  3. 480p
+  4. 360p
+  5. 144p
+  0. encerrar
+
+  >> 1
 
 ...
 
-✅ Áudio salvo em: C:\Users\seunome\Music\nome-do-video_audio.mp4
-
-### baixar vídeo com áudio
-
-Digite a URL do vídeo: https://youtube.com/exemplo
-
-Deseja baixar só o áudio? (s/n): n
-
-Escolha a resolução:
-
-1 - 1080p
-
-2 - 720p
-
-...
-
-✅ Vídeo final salvo em: C:\Users\seunome\Videos\nome-do-video_1080p.mp4
+✅ Áudio final salvo em: C:\Users\usuario\Videos\nome-do-video-1080p.mp4
+```

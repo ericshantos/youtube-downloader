@@ -17,19 +17,25 @@ def main():
 
     limpa_tela()
     print(f"\nTítulo do vídeo a ser baixado :\n\n\t {yt.title}")
-    # print(f"\nSalvando em: {destino}\n")
 
     titulo_slug:str = slugify(yt.title)
 
     if o_que_baixar == "audio":
         audio_path = baixa_audio(yt, destino, titulo_slug)
-        print(f"\nÁudio salvo em {audio_path}.")
+        limpa_tela()
+        print(f"\n✅ Áudio salvo em :\n\n\t{audio_path}.")
+    elif o_que_baixar == "video":
+        video_path, resolucao = baixa_video(yt, destino, titulo_slug)
+        limpa_tela()
+        print(f"\n✅ Vídeo salvo em :\n\n\t{video_path}.")
     else:
         video_path, resolucao = baixa_video(yt, destino, titulo_slug)
         audio_path = baixa_audio(yt, destino, titulo_slug)
 
-        output_path = destino / f"{titulo_slug}_{resolucao}.mp4"
+        output_path = destino / f"{titulo_slug}-{resolucao}.mp4"
         junta_audio_video(audio_path, video_path, output_path)
+        limpa_tela()
+        print(f"\n✅ Vídeo final salvo em :\n\n\t{output_path}")
 
 # funções de download
 def baixa_audio(yt: YouTube, destino: Path, titulo: str):
@@ -39,7 +45,7 @@ def baixa_audio(yt: YouTube, destino: Path, titulo: str):
     if not audio_stream:
         erro_sair("Stream de áudio não encontrado")
 
-    audio_path = destino / f"{titulo}_audio.mp4"
+    audio_path = destino / f"{titulo}-audio.mp3"
     print("\nBaixando áudio...")
     audio_stream.download(output_path=destino, filename=audio_path.name)
 
@@ -62,7 +68,7 @@ def baixa_video(yt: YouTube, destino: Path, titulo: str):
     if not video_stream:
         erro_sair("Stream de vídeo não encontrado")
 
-    video_path = destino / f"{titulo}_video.mp4"
+    video_path = destino / f"{titulo}-video.mp4"
 
     print(f"\nBaixando vídeo em {resolucao_escolhida}...")
     video_stream.download(output_path=destino, filename=video_path.name)
@@ -87,8 +93,6 @@ def junta_audio_video(video_path, audio_path, output_path):
 
     try:
         subprocess.run(ffmpeg_cmd, check=True)
-        limpa_tela()
-        print(f"\n✅ Vídeo final salvo em :\n\n\t{output_path}")
     except subprocess.CalledProcessError:
         erro_sair("Erro ao mesclar vídeo e áudio com FFmpeg")
     # erro quando FFmpeg não está instalado
@@ -128,18 +132,22 @@ def menu_audio_video():
     """ mostra as opções de download e retorna a escolhida """
     print("\nEscolha uma das opções de download :")
     print("\t1. somente áudio")
-    print("\t2. vídeo com aúdio")
+    print("\t2. somente vídeo")
+    print("\t3. vídeo com áudio")
     print("\t0. encerrar")
     opcao: str = input("\n >> ")
 
-    while opcao not in ("0", "1", "2"):
+    while opcao not in ("0", "1", "2", "3"):
         print("\nOpção inválida. Digite novamente.")
         opcao = input(" >> ")
 
     if opcao == "0":
         encerrar()
-
-    return "audio" if opcao == "1" else "audio_video"
+    elif opcao == "1":
+        return "audio"
+    elif opcao == "2":
+        return "video"
+    return "audio_video"
 
 def recebe_valida_url() -> str:
     """ recebe e valida a url para receber um link do YouTube válido """
