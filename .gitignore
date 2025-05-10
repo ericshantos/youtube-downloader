@@ -1,0 +1,6 @@
+# pasta do ambiente virtual
+.env
+.venv
+
+# arquivo usado para guardar links de teste
+links_teste.txt
