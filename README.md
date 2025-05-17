@@ -1,3 +1,5 @@
+[🇧🇷] [Lê em português](README.pt.md)
+
 # 📥 YouTube Video Downloader Pro
 
 <div align="left">
